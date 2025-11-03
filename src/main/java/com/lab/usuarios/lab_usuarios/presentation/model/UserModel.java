@@ -5,12 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserModel {
+    private Long id;
+
     @NotBlank(message = "Name cannot be null or empty")
     private String name;
 
@@ -18,8 +19,6 @@ public class UserModel {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must have at least 8 characters")
     private String password;
 
     @NotBlank(message = "Role is required")

@@ -59,6 +59,10 @@ public class UserController {
 
         User entity = UserMapper.toEntity(userModel);
 
+        if(entity.getId() == 0) {
+           entity.setId(null);
+        }
+
         var result = userService.saveUser(entity);
 
         return ResultDto.ok(UserMapper.toModel(result.getData()));

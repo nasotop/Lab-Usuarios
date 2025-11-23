@@ -12,4 +12,6 @@ public interface IUserService {
     ResultDto<Void> deleteUser(Long id);
     ResultDto<User> updateUser(Long id, User updatedUser);
     ResultDto<User> getUserByCredentials(String email, String password);
+    ResultDto<String> recoverPassword(String email);
+    ResultDto<List<User>> getUserByRole(String role);
 }

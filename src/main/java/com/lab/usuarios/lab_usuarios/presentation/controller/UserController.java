@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("api/user")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -59,13 +58,29 @@ public class UserController {
 
         User entity = UserMapper.toEntity(userModel);
 
-        if(entity.getId() == 0) {
-           entity.setId(null);
+        if (entity.getId() == 0) {
+            entity.setId(null);
         }
 
         var result = userService.saveUser(entity);
 
         return ResultDto.ok(UserMapper.toModel(result.getData()));
+    }
+
+    @PostMapping("recovery")
+    public ResultDto<String> recoverPassword(@RequestParam String email) {
+
+        if (EmailHelper.isValidEmail(email) == false) {
+            return ResultDto.fail("Invalid email format");
+        }
+
+        var result = userService.recoverPassword(email);
+
+        if (!result.isSuccess()) {
+            return ResultDto.fail(result.getErrorMessage());
+        }
+
+        return ResultDto.ok("Recovery instructions sent");
     }
 
     @PostMapping("update/{id}")
@@ -99,6 +114,7 @@ public class UserController {
             return ResultDto.fail(result.getErrorMessage());
         }
     }
+
     @GetMapping("get-all-users")
     public ResultDto<List<UserModel>> getAllUsers() {
         var result = userService.getAllUsers();
@@ -118,5 +134,17 @@ public class UserController {
             return ResultDto.fail(result.getErrorMessage());
         }
         return ResultDto.ok(UserMapper.toModel(result.getData()));
+    }
+
+    @GetMapping("get-user-by-role/{role}")
+    public ResultDto<List<UserModel>> getUserByRole(@PathVariable String role) {
+        var result = userService.getUserByRole(role);
+        if (!result.isSuccess()) {
+            return ResultDto.fail(result.getErrorMessage());
+        }
+        List<UserModel> userModels = result.getData().stream()
+                .map(UserMapper::toModel)
+                .toList();
+        return ResultDto.ok(userModels);
     }
 }

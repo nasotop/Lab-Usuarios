@@ -1,6 +1,7 @@
 package com.lab.usuarios.lab_usuarios.application.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public ResultDto<List<User>> getUserByRole(String role) {
+        return ResultDto.ok(userRepository.findByRole(role.toUpperCase()));
+    }
+
+    @Override
     public ResultDto<User> updateUser(Long id, User updatedUser) {
         return userRepository.findById(id)
                 .map(user -> {
@@ -64,6 +70,27 @@ public class UserService implements IUserService {
             }
         }
         return ResultDto.fail("Invalid credentials");
+    }
+
+    @Override
+    public ResultDto<String> recoverPassword(String email) {
+
+        if (email == null || email.isBlank()) {
+            return ResultDto.fail("Email is required");
+        }
+
+        var user = userRepository.findAll()
+                .stream()
+                .filter(u -> u.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+
+        if (user.isEmpty()) {
+            return ResultDto.fail("User not found");
+        }
+
+        String token = UUID.randomUUID().toString();
+
+        return ResultDto.ok("Recovery instructions sent");
     }
 
 }
